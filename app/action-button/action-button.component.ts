@@ -1,0 +1,111 @@
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from "@angular/core";
+import { View } from "tns-core-modules/ui/core/view";
+import { GestureEventData } from "tns-core-modules/ui/gestures";
+
+/* ***********************************************************
+* Before you can navigate to this page from your app, you need to reference this page's module in the
+* global app router module. Add the following object to the global array of routes:
+* { path: "action-button", loadChildren: "./action-button/action-button.module#ActionButtonModule" }
+* Note that this simply points the path to the page module file. If you move the page, you need to update the route too.
+*************************************************************/
+
+@Component({
+    selector: "ActionButton",
+    moduleId: module.id,
+    templateUrl: "./action-button.component.html",
+    styleUrls: ['./action-button.component.css']
+})
+export class ActionButtonComponent {
+    @Input('isArrow') isArrow: boolean;
+
+    @Output("tap") tap: EventEmitter<GestureEventData> = new EventEmitter<GestureEventData>();
+
+    @ViewChild("lineTop") _lineTopRef: ElementRef;
+    @ViewChild("lineCenter") _lineCenterRef: ElementRef;
+    @ViewChild("lineBottom") _lineBottomRef: ElementRef;
+
+    constructor() {
+        /* ***********************************************************
+        * Use the constructor to inject app services that you need in this component.
+        *************************************************************/
+    }
+
+    onTap(args: GestureEventData) {
+        this.tap.next(args);
+    }
+
+    updateTop(element: View,animate:boolean) {
+        if (animate) {
+            if (this.isArrow) {
+                element.animate({
+                    rotate: -45,
+					scale: { x: 0.45, y: 1 },
+					translate: { x: -5, y: 3 },
+					duration: 200
+                }).catch(() => { });
+            } else {
+                this.animateToHamburger(element);
+            }
+        } else {
+            element.rotate = -45;
+			element.scaleX = 0.45;
+			element.translateX = -5;
+			element.translateY = 3;
+        }
+    }
+
+    updateCenter(element: View,animate:boolean) {
+		if (animate) {
+			if (this.isArrow) {
+				element.animate({
+					rotate: 0,
+					scale: { x: 0.9, y: 1 },
+					translate: { x: 1, y: 0 },
+					duration: 200
+				}).catch(() => { });
+			} else {
+				this.animateToHamburger(element);
+			}
+		} else {
+			element.rotate = 0;
+			element.scaleX = 0.9;
+			element.translateX = 1;
+			element.translateY = 0;
+		}
+	}
+
+	updateBottom(element: View, animate:boolean) {
+		if (animate) {
+			if (this.isArrow) {
+				element.animate({
+					rotate: 45,
+					scale: { x: 0.45, y: 1 },
+					translate: { x: -5, y: -3 },
+					duration: 200
+				}).catch(() => { });
+			} else {
+				this.animateToHamburger(element);
+			}
+		} else {
+			element.rotate = 45;
+			element.scaleX = 0.45;
+			element.translateX = -5;
+			element.translateY = -3;
+		}
+	}
+
+	animateToHamburger(element: View) {
+		element.animate({
+			rotate: 0,
+			scale: { x: 1, y: 1 },
+			translate: { x: 0, y: 0 },
+			duration: 200
+		}).catch(() => { });
+	}
+
+	makeArrow() {
+		this.updateTop(this._lineTopRef.nativeElement, false);
+		this.updateCenter(this._lineCenterRef.nativeElement, false);
+		this.updateBottom(this._lineBottomRef.nativeElement, false);
+	} 
+}
